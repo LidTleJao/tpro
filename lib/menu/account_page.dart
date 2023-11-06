@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:hive/hive.dart';
 import 'package:tpro/Services.dart';
 import 'package:tpro/menu/edit_profile_page.dart';
 import 'package:tpro/menu/login_page.dart';
 import 'package:tpro/menu/setting_page.dart';
 import 'package:tpro/models/account.dart';
-import 'package:tpro/models/accounts.dart';
 import 'package:tpro/models/imgs.dart';
+// import 'package:tpro/models/accounts.dart';
 
 class AccountPage extends StatefulWidget {
   @override
@@ -30,17 +30,20 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
     isLoading = true;
     title = 'Loading Images...';
-    imgs = Imgs();
+    // imgs = Imgs();
     getUser();
+    // print(_mybox.get("account"));
   }
 
   void getUser() {
-    // String account = _mybox.get("account");
-    accs = parseUser(_mybox.get("account"));
-    Services.getImgsByUser(accs!.id.toInt()).then((imgsFromServer) {
+    String account = _mybox.get("account");
+    accs = parseUser(account);
+    // print("acccccc");
+    // print("accccccccccccccccccccc" + accs!.id.toString());
+    Services.getImgsByUser(accs!.id).then((imgsFromServer) {
       setState(() {
         imgs = imgsFromServer;
-        print(imgs);
+        print(imgs!.imgs[0].image);
         isLoading = false;
       });
     });
@@ -48,6 +51,7 @@ class _AccountPageState extends State<AccountPage> {
 
   static Account parseUser(String responseBody) {
     final Map<String, dynamic> parsed = json.decode(responseBody);
+    // print(Account.fromJson(parsed));
     return Account.fromJson(parsed);
   }
 
@@ -107,112 +111,101 @@ class _AccountPageState extends State<AccountPage> {
           ],
         ),
         drawer: isLargeScreen ? null : _drawer(),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                width: 417,
-                height: 230,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                child: Card(
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  color: Colors.transparent,
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            width: 120,
-                            height: 120,
-                            clipBehavior: Clip.antiAlias,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      width: 417,
+                      height: 230,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      child: Card(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        color: Colors.transparent,
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Container(
+                                  width: 120,
+                                  height: 120,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.account_circle,
+                                    size: 120,
+                                  ),
+                                ),
+                              ],
                             ),
-                            child: Icon(
-                              Icons.account_circle,
-                              size: 120,
+                            Text(
+                              // '${accs!.name}'
+                              "${accs!.name}",
+                              style: TextStyle(fontSize: 28),
                             ),
+                            Column(
+                              children: [
+                                Container(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditProFilePage()));
+                                    },
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Color.fromARGB(
+                                                    255, 31, 31, 31))),
+                                    child: Text('Edit Profile'),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Image(
+                    //     image: MemoryImage(base64Decode(imgs!.imgs[0].image))),
+                    Expanded(
+                        child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          // mainAxisExtent: 390,
+                          childAspectRatio: 0.6
+                          // MediaQuery.of(context).size.width/(MediaQuery.of(context).size.height / 4),
                           ),
-                        ],
-                      ),
-                      Text(
-                        '${accs!.name}',
-                        style: TextStyle(fontSize: 28),
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditProFilePage()));
-                              },
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Color.fromARGB(255, 31, 31, 31))),
-                              child: Text('Edit Profile'),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+                      itemCount: imgs!.imgs.isEmpty ? 0 : imgs!.imgs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          child:
+                              Image.memory(base64Decode(imgs!.imgs[index].url)),
+                        );
+                        // print("sdsssssssssssssssssssssssssssssssssssssss"+imgs!.imgs[index].image);
+                      },
+                    )),
+                  ],
                 ),
               ),
-              Expanded(
-                  child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
-                    // mainAxisExtent: 390,
-                    childAspectRatio: 0.48
-                    // MediaQuery.of(context).size.width/(MediaQuery.of(context).size.height / 4),
-                    ),
-                itemCount: imgs!.imgs.isEmpty ? 0 : imgs!.imgs.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    child: Image.memory(base64Decode(imgs!.imgs[index].image)),
-                  );
-                },
-              ))
-              // Expanded(
-              //   child: StaggeredGridView.count(
-              //     crossAxisCount: 2,
-              //     crossAxisSpacing: 10,
-              //     mainAxisSpacing: 10,
-              //     children: [
-              //       GridView.builder(
-              //         itemCount: accs!.image.isEmpty ? 0 : accs!.image.length,
-              //         itemBuilder: (BuildContext context, int index) {
-              //           return Image.memory(base64Decode(accs!.image[index]));
-              //         },
-              //         gridDelegate:
-              //             const SliverGridDelegateWithFixedCrossAxisCount(
-              //           crossAxisCount: 2,
-              //           crossAxisSpacing: 5,
-              //           mainAxisSpacing: 5,
-              //         ),
-              //       )
-              //     ],
-              //   ),
-              // )
-            ],
-          ),
-        ),
       ),
     );
   }

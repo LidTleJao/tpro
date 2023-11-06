@@ -18,9 +18,25 @@ class Services {
   static const String list_com =
       "http://192.168.1.20/database_minipro_mobile/list_comments";
 
-  static Future<Coms> getcoms() async {
+  static Future<Coms> getComsByidimg(num id) async {
+    try {
+      final response = await http.get(Uri.parse(
+          'http://192.168.1.20/database_minipro_mobile/list_comment/id_image/$id'));
+      if (200 == response.statusCode) {
+        return parseComs(response.body);
+      } else {
+        return Coms();
+      }
+    } catch (e) {
+      print('Error ${e.toString()}');
+      return Coms();
+    }
+  }
+
+  static Future<Coms> getComs() async {
     try {
       final response = await http.get(Uri.parse(list_com));
+      print(response.body);
       if (200 == response.statusCode) {
         return parseComs(response.body);
       } else {
@@ -63,11 +79,10 @@ class Services {
     return p;
   }
 
-  static Future<Imgs> getImgsByUser(int id) async {
+  static Future<Imgs> getImgsByUser(num id) async {
     try {
       final response = await http.get(Uri.parse(
           'http://192.168.1.20/database_minipro_mobile/list_image/id_acc/$id'));
-      print(response.body);
       if (200 == response.statusCode) {
         return parseImgs(response.body);
       } else {

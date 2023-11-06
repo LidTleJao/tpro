@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:tpro/Services.dart';
 import 'package:tpro/menu/comment_page.dart';
 import 'package:tpro/menu/edit_post_page.dart';
@@ -20,8 +21,23 @@ class _HomepageState extends State<Homepage> {
   Accounts? accs;
   String? title;
   bool isLoading = false;
+  final _mybox = Hive.box('mybox');
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void seteditpost(num id_img) {
+    _mybox.put('id_image', id_img);
+    print(_mybox.get('id_image'));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => EditPostPage()));
+  }
+
+  void setcom(num id_img) {
+    _mybox.put('id_image', id_img);
+    print(_mybox.get('id_image'));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => CommentPage()));
+  }
 
   @override
   void initState() {
@@ -34,7 +50,7 @@ class _HomepageState extends State<Homepage> {
     Services.getAccounts().then((accsFromServer) {
       setState(() {
         accs = accsFromServer;
-        print(accs);
+        // print(accs);
         isLoading = false;
       });
     });
@@ -108,6 +124,7 @@ class _HomepageState extends State<Homepage> {
                   },
                   itemBuilder: (BuildContext context, int index) {
                     final item = imgs!.imgs[index];
+                    print(imgs!.imgs[index]);
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -150,11 +167,8 @@ class _HomepageState extends State<Homepage> {
                                             offset: const Offset(0, 40),
                                             onSelected: (Menu item) {
                                               if (item == Menu.itemOne) {
-                                                Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            EditPostPage()));
+                                                seteditpost(
+                                                    imgs!.imgs[index].id);
                                               }
                                               if (item == Menu.itemTwo) {
                                                 Navigator.pushReplacement(
@@ -200,11 +214,7 @@ class _HomepageState extends State<Homepage> {
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      CommentPage()));
+                                          setcom(imgs!.imgs[index].id);
                                         },
                                         icon: Stack(
                                           children: [
@@ -222,7 +232,7 @@ class _HomepageState extends State<Homepage> {
                                                       .red, // สีพื้นหลังข้อความจำนวนความคิดเห็น
                                                 ),
                                                 child: Text(
-                                                  "${item.count_comment}", // จำนวนความคิดเห็น (ค่าคงที่หรือตัวแปรที่คุณต้องการแสดง)
+                                                  "", // จำนวนความคิดเห็น (ค่าคงที่หรือตัวแปรที่คุณต้องการแสดง)
                                                   style: TextStyle(
                                                     color: Colors
                                                         .white, // สีข้อความจำนวนความคิดเห็น
@@ -253,7 +263,7 @@ class _HomepageState extends State<Homepage> {
                                                       .red, // สีพื้นหลังข้อความจำนวนความคิดเห็น
                                                 ),
                                                 child: Text(
-                                                  "${item.count_like}", // จำนวนความคิดเห็น (ค่าคงที่หรือตัวแปรที่คุณต้องการแสดง)
+                                                  "", // จำนวนความคิดเห็น (ค่าคงที่หรือตัวแปรที่คุณต้องการแสดง)
                                                   style: TextStyle(
                                                     color: Colors
                                                         .white, // สีข้อความจำนวนความคิดเห็น

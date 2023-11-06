@@ -6,7 +6,7 @@ part 'type_img.g.dart';
 class Type_img {
   Type_img();
 
-  late String id;
+  late num id;
   late String name_type;
   
   factory Type_img.fromJson(Map<String,dynamic> json) => _$Type_imgFromJson(json);

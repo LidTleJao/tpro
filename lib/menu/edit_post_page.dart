@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
 import 'package:tpro/menu/buttonBar.dart';
+import 'package:tpro/models/account.dart';
+import 'package:http/http.dart' as http;
 
 class EditPostPage extends StatefulWidget {
   @override
@@ -8,19 +13,36 @@ class EditPostPage extends StatefulWidget {
 }
 
 class _EditPostPageState extends State<EditPostPage> {
-  List<CommentItem> comments = [
-    CommentItem(
-      username: 'username1',
-      comment: 'This is a great post!',
-      timeAgo: '2 minutes ago',
-    ),
-    CommentItem(
-      username: 'username2',
-      comment: 'Awesome picture!',
-      timeAgo: '5 minutes ago',
-    ),
-    // Add more CommentItems as needed
-  ];
+  final _mybox = Hive.box('mybox');
+  // Account? accs;
+  String? title;
+  bool isLoading = false;
+  num idimg = 0;
+  TextEditingController getdescription = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    isLoading = true;
+    title = 'Loading Images...';
+    // imgs = Imgs();
+    // getUser();
+    // print(_mybox.get("account"));
+  }
+
+  Future editpost() async {
+    idimg = _mybox.get("id_image");
+    final dataa = {"id": idimg, "detail": getdescription.text};
+    print(dataa);
+    String url =
+        "http://192.168.1.20/database_minipro_mobile/list_image/${idimg}";
+    final response = await http.put(Uri.parse(url), body: jsonEncode(dataa));
+    print(response.body);
+    if (response.statusCode == 200) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => ButtonBarPage()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,21 +72,22 @@ class _EditPostPageState extends State<EditPostPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'Image :',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Image.network(
-              'https://scontent.fkkc3-1.fna.fbcdn.net/v/t39.30808-6/281209364_3114730208815835_6514867847790588562_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_ohc=WzS3t2av1RwAX8Ows2J&_nc_ht=scontent.fkkc3-1.fna&oh=00_AfB7a7yQyxkri7zL3f2WBAu1I6O4Y4IA2cZrEMsBReWx0Q&oe=65447BFE', // URL ของรูปภาพที่คุณต้องการแก้ไข
-              width: 200,
-              height: 200,
-            ),
+            // Text(
+            //   'Image :',
+            //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            // ),
+            // Image.network(
+            //   'https://scontent.fkkc3-1.fna.fbcdn.net/v/t39.30808-6/281209364_3114730208815835_6514867847790588562_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_ohc=WzS3t2av1RwAX8Ows2J&_nc_ht=scontent.fkkc3-1.fna&oh=00_AfB7a7yQyxkri7zL3f2WBAu1I6O4Y4IA2cZrEMsBReWx0Q&oe=65447BFE', // URL ของรูปภาพที่คุณต้องการแก้ไข
+            //   width: 200,
+            //   height: 200,
+            // ),
             SizedBox(height: 20),
             Text(
               'Detail :',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             TextFormField(
+              controller: getdescription,
               maxLines: 3,
               decoration: InputDecoration(
                 hintText: 'Enter Detail',
@@ -78,10 +101,6 @@ class _EditPostPageState extends State<EditPostPage> {
                 //     borderRadius: BorderRadius.circular(4)),
               ),
               onPressed: () {
-                // ส่งข้อมูลการแก้ไขไปยัง Instagram API
-                // คุณควรเขียนโค้ดเพื่อเชื่อมต่อกับ Instagram API
-                // และส่งข้อมูลการแก้ไขและรูปภาพไปยัง API
-                // ในตัวอย่างนี้เราใช้ข้อมูลจำลองแทน
                 final simulatedResponse = {
                   'status': 'success',
                   'message': 'แก้ไขโพสต์สำเร็จ'
@@ -100,6 +119,7 @@ class _EditPostPageState extends State<EditPostPage> {
                         'ล้มเหลวในการแก้ไขโพสต์: ${simulatedResponse['message']}'),
                   ));
                 }
+                editpost();
               },
               child: Text('Summit'),
             ),

@@ -7,7 +7,7 @@ part of 'type_img.dart';
 // **************************************************************************
 
 Type_img _$Type_imgFromJson(Map<String, dynamic> json) => Type_img()
-  ..id = json['id'] as String
+  ..id = json['id'] as num
   ..name_type = json['name_type'] as String;
 
 Map<String, dynamic> _$Type_imgToJson(Type_img instance) => <String, dynamic>{

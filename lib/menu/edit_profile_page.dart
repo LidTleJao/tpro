@@ -36,7 +36,7 @@ class _EditProFilePageState extends State<EditProFilePage> {
     isLoading = false;
   }
 
-  void editAccount() async {
+  Future editAccount() async {
     final dataa = {'name': name.text};
     String url =
         "http://192.168.1.20/database_minipro_mobile/account/${accs!.id}";

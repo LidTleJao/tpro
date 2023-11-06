@@ -12,7 +12,9 @@ class ButtonBarPage extends StatefulWidget {
 
 class _ButtonBarPageState extends State<ButtonBarPage> {
   int _currentIndex = 0;
-  final tabs = [Homepage(), AddImagePage(), AccountPage()];
+  final tabs = [Homepage(), AddImagePage()
+  , AccountPage()
+  ];
 
   @override
   Widget build(BuildContext context) {

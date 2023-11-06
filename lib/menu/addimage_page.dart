@@ -29,7 +29,7 @@ class _AddImagePageState extends State<AddImagePage> {
   // รายการประเภทรูปภาพ
   List<String> data = [];
 
-  void postimg() async {
+  Future postimg() async {
     int tid = 0;
     for (var i = 0; i < type_imgs!.type_imgs.length; i++) {
       if (selectedCategory.contains(type_imgs!.type_imgs[i].name_type)) {
@@ -44,7 +44,7 @@ class _AddImagePageState extends State<AddImagePage> {
       'type_image': tid
     };
 
-    print(bs64);
+    print(dataa);
     String url = "http://192.168.1.20/database_minipro_mobile/list_image";
     final response = await http.post(Uri.parse(url), body: jsonEncode(dataa));
     print(response.body);
@@ -59,7 +59,7 @@ class _AddImagePageState extends State<AddImagePage> {
     return Account.fromJson(parsed);
   }
 
-  Future<void> _pickImage() async {
+  void _pickImage() async {
     final imagePicker = ImagePicker();
     final pickedImage = await imagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 500, maxWidth: 500);
@@ -82,6 +82,7 @@ class _AddImagePageState extends State<AddImagePage> {
     Services.getTypeimgs().then((typeimgsFromServer) {
       setState(() {
         type_imgs = typeimgsFromServer;
+        print("tehjh" + type_imgs!.type_imgs[1].name_type);
         for (var i = 0; i < type_imgs!.type_imgs.length; i++) {
           data += ['${type_imgs!.type_imgs[i].name_type}'];
         }
@@ -89,11 +90,6 @@ class _AddImagePageState extends State<AddImagePage> {
         // isLoading = false;
       });
     });
-  }
-
-  void postToVSCO() {
-    // ใส่โค้ดเมื่อคุณต้องการโพสต์รูปภาพไปยัง VSCO
-    // ขั้นตอนนี้อาจจะต้องใช้ API ของ VSCO หรือวิธีอื่น ๆ ที่ VSCO มีให้
   }
 
   @override

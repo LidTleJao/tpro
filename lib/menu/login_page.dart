@@ -25,15 +25,17 @@ class _LoginPageState extends State<LoginPage> {
 
   void submitData() async {
     final dataa = {'gmail': gmail.text, 'password': password.text};
+    print(dataa);
 
     String url = "http://192.168.1.20/database_minipro_mobile/account/login";
     final response = await http.post(Uri.parse(url), body: jsonEncode(dataa));
-    var data = json.decode(response.body);
+    var data_login = json.decode(response.body);
 
-    print(data);
-    if (response.statusCode != 201) {
+    print(response.statusCode);
+    if (response.statusCode == 201) {
+      _mybox.put('account', response.body);
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+          context, MaterialPageRoute(builder: (context) => ButtonBarPage()));
     } else {
       _mybox.put('account', response.body);
       Navigator.pushReplacement(context,
